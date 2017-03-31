@@ -1,34 +1,22 @@
 <?php
-require __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 require __DIR__ . '/db.php';
+require __DIR__ . '/api.php';
+
+$apiEndpointPrefix = '/api';
+
+$container = new \Slim\Container(); //Create Your container
+
+require __DIR__ . '/error.php';
 
 // Create and configure Slim app
-$app = new \Slim\App(['settings' => [
+$app = new \Slim\App($container, ['settings' => [
   'addContentLengthHeader' => true,
 ]]);
 
 // provide minial default data as db
-$db = new MockDB();
-
-// open account
-$app->post('/{accountId}/open', function ($request, $response, $args) use ($db) {
-  $dbResponse = $db->open($args['accountId']);
-  return $response->withJson($dbResponse);
-});
-
-// close account
-$app->post('/{accountId}/close', function ($request, $response, $args) use ($db) {
-  $dbResponse = $db->close($args['accountId']);
-  return $response->withJson($dbResponse);
-});
-
-// TODO
-// get balance
-$app->get('/{accountId}/balance', function ($request, $response, $args) use ($db) {});
-
-// TODO
-// withdraw and deposit money
-$app->post('/{accountId}/balance', function ($request, $response, $args) use ($db) {});
+// also init the app with the api endpoints
+API::init($app, new MockDB());
 
 // Run app
 $app->run();
