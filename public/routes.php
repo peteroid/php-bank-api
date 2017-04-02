@@ -19,8 +19,9 @@ class API_Routes {
 
       // withdraw and deposit money
       $app->post('/account/{accountId}/deposit/{amount}', array($apiController, 'depositAction'));
+      $app->post('/account/{accountId}/withdraw/{amount}', array($apiController, 'withdrawAction'));
     })->add(function ($request, $response, $next) {
-      // error_log($response);
+      // add any middleware for later development, e.g. auth
       $response = $next($request, $response);
       return $response;
     });

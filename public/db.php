@@ -83,15 +83,39 @@ class MockDB {
   }
 
   /**
-   * db deposit balance
-   * Get the balance of an account, response -1 if not found
+   * db deposit
+   * deposit an amoutn of money from an account
    * @param $accountId : string
+   * @param $amount : int
    */
   public function deposit($accountId, $amount) {
     $success = false;
     $this->withStore(function (&$accounts) use ($accountId, $amount, &$success) {
       if (array_key_exists($accountId, $accounts)) {
         $accounts[$accountId]['balance'] += $amount;
+        $success = true;
+      } else {
+        $this->message = "Account doesn't exist";
+        $success = false;
+      }
+    });
+
+    return $this->withMessage(array(
+      'success' => $success
+    ));
+  }
+
+  /**
+   * db withdraw
+   * withdraw an amoutn of money from an account
+   * @param $accountId : string
+   * @param $amount : int
+   */
+  public function withdraw($accountId, $amount) {
+    $success = false;
+    $this->withStore(function (&$accounts) use ($accountId, $amount, &$success) {
+      if (array_key_exists($accountId, $accounts)) {
+        $accounts[$accountId]['balance'] -= $amount;
         $success = true;
       } else {
         $this->message = "Account doesn't exist";

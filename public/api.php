@@ -29,6 +29,11 @@ class API_Controller {
     $dbResponse = $this->db->deposit($args['accountId'], (int) $args['amount']);
     return $response->withJson($dbResponse);
   }
+
+  public function withdrawAction ($request, $response, $args) {
+    $dbResponse = $this->db->withdraw($args['accountId'], (int) $args['amount']);
+    return $response->withJson($dbResponse);
+  }
 }
 
 ?>
