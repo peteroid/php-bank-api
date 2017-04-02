@@ -32,11 +32,11 @@ class ApiTest extends TestCase {
 
   public function testOpen() {
     $accountId = $this->testId;
-    $openParams = array(
+    $params = array(
         'REQUEST_METHOD' => 'POST',
         'REQUEST_URI' => '/api/account/' . $accountId . '/open'
     );
-    $jsonOut = $this->makeJsonResponse($openParams);
+    $jsonOut = $this->makeJsonResponse($params);
     if (property_exists($jsonOut, 'message')) {
       $this->assertEquals('Account already exists', $jsonOut->message);
       $this->assertEquals(false, $jsonOut->opened);
@@ -46,7 +46,7 @@ class ApiTest extends TestCase {
     }
 
     // open twice much be existed
-    $jsonOut = $this->makeJsonResponse($openParams);
+    $jsonOut = $this->makeJsonResponse($params);
     $this->assertEquals('Account already exists', $jsonOut->message);
     $this->assertEquals(false, $jsonOut->opened);
   }
@@ -56,11 +56,11 @@ class ApiTest extends TestCase {
    */
   public function testClose() {
     $accountId = $this->testId;
-    $openParams = array(
+    $params = array(
         'REQUEST_METHOD' => 'POST',
         'REQUEST_URI' => '/api/account/' . $accountId . '/close'
     );
-    $jsonOut = $this->makeJsonResponse($openParams);
+    $jsonOut = $this->makeJsonResponse($params);
 
     if (property_exists($jsonOut, 'message')) {
 
@@ -71,7 +71,7 @@ class ApiTest extends TestCase {
     }
 
     // close twice much be missed
-    $jsonOut = $this->makeJsonResponse($openParams);
+    $jsonOut = $this->makeJsonResponse($params);
     $this->assertEquals('Account doesn\'t exist', $jsonOut->message);
     $this->assertEquals(false, $jsonOut->deleted);
   }
@@ -81,11 +81,10 @@ class ApiTest extends TestCase {
    */
   public function testGetBalanceAfterOpen() {
     $accountId = $this->testId;
-    $openParams = array(
+    $jsonOut = $this->makeJsonResponse(array(
         'REQUEST_METHOD' => 'GET',
         'REQUEST_URI' => '/api/account/' . $accountId . '/balance'
-    );
-    $jsonOut = $this->makeJsonResponse($openParams);
+    ));
 
     $this->assertInternalType('int', $jsonOut->balance);
   }
@@ -95,11 +94,10 @@ class ApiTest extends TestCase {
    */
   public function testGetBalanceAfterClose() {
     $accountId = $this->testId;
-    $openParams = array(
+    $jsonOut = $this->makeJsonResponse(array(
         'REQUEST_METHOD' => 'GET',
         'REQUEST_URI' => '/api/account/' . $accountId . '/balance'
-    );
-    $jsonOut = $this->makeJsonResponse($openParams);
+    ));
 
     $this->assertEquals('Account doesn\'t exist', $jsonOut->message);
     $this->assertEquals(-1, $jsonOut->balance);
