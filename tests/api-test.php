@@ -54,6 +54,42 @@ class ApiTest extends TestCase {
   /**
    * @depends testOpen
    */
+  public function testGetBalanceAfterOpen() {
+    $accountId = $this->testId;
+    $jsonOut = $this->makeJsonResponse(array(
+        'REQUEST_METHOD' => 'GET',
+        'REQUEST_URI' => '/api/account/' . $accountId . '/balance'
+    ));
+
+    $this->assertInternalType('int', $jsonOut->balance);
+  }
+
+  /**
+   * @depends testOpen
+   */
+  public function testDepositAfterOpen() {
+    $accountId = $this->testId;
+    $balanceParams = array(
+        'REQUEST_METHOD' => 'GET',
+        'REQUEST_URI' => '/api/account/' . $accountId . '/balance'
+    );
+    $balanceJsonOut = $this->makeJsonResponse($balanceParams);
+    $currentBalance = $balanceJsonOut->balance;
+
+    $amount = 777;
+    $depositJsonOut = $this->makeJsonResponse(array(
+        'REQUEST_METHOD' => 'POST',
+        'REQUEST_URI' => '/api/account/' . $accountId . '/deposit/' . $amount
+    ));
+    $this->assertEquals(true, $depositJsonOut->success);
+
+    $balanceJsonOut = $this->makeJsonResponse($balanceParams);
+    $this->assertEquals($currentBalance + $amount, $balanceJsonOut->balance);
+  }
+
+  /**
+   * @depends testDepositAfterOpen
+   */
   public function testClose() {
     $accountId = $this->testId;
     $params = array(
@@ -63,7 +99,6 @@ class ApiTest extends TestCase {
     $jsonOut = $this->makeJsonResponse($params);
 
     if (property_exists($jsonOut, 'message')) {
-
       $this->assertEquals('Account doesn\'t exist', $jsonOut->message);
       $this->assertEquals(false, $jsonOut->deleted);
     } else {
@@ -74,19 +109,6 @@ class ApiTest extends TestCase {
     $jsonOut = $this->makeJsonResponse($params);
     $this->assertEquals('Account doesn\'t exist', $jsonOut->message);
     $this->assertEquals(false, $jsonOut->deleted);
-  }
-
-  /**
-   * @depends testOpen
-   */
-  public function testGetBalanceAfterOpen() {
-    $accountId = $this->testId;
-    $jsonOut = $this->makeJsonResponse(array(
-        'REQUEST_METHOD' => 'GET',
-        'REQUEST_URI' => '/api/account/' . $accountId . '/balance'
-    ));
-
-    $this->assertInternalType('int', $jsonOut->balance);
   }
 
   /**
