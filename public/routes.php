@@ -14,13 +14,12 @@ class API_Routes {
       // close account
       $app->post('/account/{accountId}/close', array($apiController, 'closeAction'));
 
-      // TODO
       // get balance
-      $app->get('/{accountId}/balance', array($apiController, 'someAction'));
+      $app->get('/account/{accountId}/balance', array($apiController, 'getBalanceAction'));
 
       // TODO
       // withdraw and deposit money
-      $app->post('/{accountId}/balance', array($apiController, 'someAction'));
+      $app->post('/account/{accountId}/balance', array($apiController, 'someAction'));
     })->add(function ($request, $response, $next) {
       // error_log($response);
       $response = $next($request, $response);

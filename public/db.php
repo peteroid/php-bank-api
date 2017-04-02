@@ -61,6 +61,24 @@ class MockDB {
     ));
   }
 
+  public function getBalance($accountId) {
+    $balance = -1;
+    $this->withStore(function (&$accounts) use ($accountId, &$balance) {
+      if (array_key_exists($accountId, $accounts)) {
+        $accountDetails = $accounts[$accountId];
+        $balance = $accountDetails['balance'];
+      } else {
+        $this->message = "Account doesn't exist";
+      }
+    });
+
+    return $this->withMessage(array(
+      'balance' => $balance
+    ));
+  }
+
+  /*** Helper functions for the db class ***/
+
   // wrapper for getting the store and then store it back after action
   // this is just a simple json store, not using for real production usage
   private function withStore($cb) {

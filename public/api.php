@@ -20,10 +20,9 @@ class API_Controller {
     return $response->withJson($dbResponse);
   }
 
-  public function someAction ($request, $response, $args) {
-    // $dbResponse = $db->close($args['accountId']);
-    // return $response->withJson($dbResponse);
-    return $response;
+  public function getBalanceAction ($request, $response, $args) {
+    $dbResponse = $this->db->getBalance($args['accountId']);
+    return $response->withJson($dbResponse);
   }
 }
 

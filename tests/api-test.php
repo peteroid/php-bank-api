@@ -75,6 +75,24 @@ class ApiTest extends TestCase {
     $this->assertEquals('Account doesn\'t exist', $jsonOut->message);
     $this->assertEquals(false, $jsonOut->deleted);
   }
+
+  /**
+   * @depends testOpen
+   */
+  public function testGetBalance() {
+    $accountId = $this->testId;
+    $openParams = array(
+        'REQUEST_METHOD' => 'GET',
+        'REQUEST_URI' => '/api/account/' . $accountId . '/balance'
+    );
+    $jsonOut = $this->makeJsonResponse($openParams);
+
+    $this->assertInternalType('int', $jsonOut->balance);
+    if (property_exists($jsonOut, 'message')) {
+      $this->assertEquals('Account doesn\'t exist', $jsonOut->message);
+      $this->assertEquals(-1, $jsonOut->balance);
+    }
+  }
 }
 
 ?>
