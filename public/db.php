@@ -3,6 +3,11 @@
 class MockDB {
   var $filename = __DIR__ . '/db.store';
   var $message = '';
+  var $willSaveStore;
+
+  public function __construct($willSaveStore = true) {
+    $this->willSaveStore = $willSaveStore;
+  }
 
   /**
    * Simulate db open action
@@ -35,7 +40,8 @@ class MockDB {
     ) : array()));
   }
 
-  /** db close action
+  /**
+   * db close action
    * Delete an account by account id from the store
    * @param $accountId : string
    */
@@ -59,7 +65,11 @@ class MockDB {
   // this is just a simple json store, not using for real production usage
   private function withStore($cb) {
     // retrive the store
-    $accounts = json_decode(file_get_contents($this->filename), true);
+    $storeRaw = @file_get_contents($this->filename);
+    if ($storeRaw === false) {
+      $storeRaw = '{}';
+    }
+    $accounts = json_decode($storeRaw, true);
     if ($accounts === false || $accounts === null) {
       $accounts = array(
         'created_date' => time()
@@ -69,7 +79,9 @@ class MockDB {
     call_user_func_array($cb, array(&$accounts));
 
     // save the store
-    file_put_contents($this->filename, json_encode($accounts));
+    if ($this->willSaveStore) {
+      file_put_contents($this->filename, json_encode($accounts));
+    }
     // error_log(json_encode($accounts));
   }
 
