@@ -79,7 +79,7 @@ class ApiTest extends TestCase {
   /**
    * @depends testOpen
    */
-  public function testGetBalance() {
+  public function testGetBalanceAfterOpen() {
     $accountId = $this->testId;
     $openParams = array(
         'REQUEST_METHOD' => 'GET',
@@ -88,10 +88,21 @@ class ApiTest extends TestCase {
     $jsonOut = $this->makeJsonResponse($openParams);
 
     $this->assertInternalType('int', $jsonOut->balance);
-    if (property_exists($jsonOut, 'message')) {
-      $this->assertEquals('Account doesn\'t exist', $jsonOut->message);
-      $this->assertEquals(-1, $jsonOut->balance);
-    }
+  }
+
+  /**
+   * @depends testClose
+   */
+  public function testGetBalanceAfterClose() {
+    $accountId = $this->testId;
+    $openParams = array(
+        'REQUEST_METHOD' => 'GET',
+        'REQUEST_URI' => '/api/account/' . $accountId . '/balance'
+    );
+    $jsonOut = $this->makeJsonResponse($openParams);
+
+    $this->assertEquals('Account doesn\'t exist', $jsonOut->message);
+    $this->assertEquals(-1, $jsonOut->balance);
   }
 }
 
