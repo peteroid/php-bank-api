@@ -90,6 +90,29 @@ class ApiTest extends TestCase {
   /**
    * @depends testDepositAfterOpen
    */
+  public function testWithdrawAfterDeposit() {
+    $accountId = $this->testId;
+    $balanceParams = array(
+        'REQUEST_METHOD' => 'GET',
+        'REQUEST_URI' => '/api/account/' . $accountId . '/balance'
+    );
+    $balanceJsonOut = $this->makeJsonResponse($balanceParams);
+    $currentBalance = $balanceJsonOut->balance;
+
+    $amount = 77;
+    $withdrawJsonOut = $this->makeJsonResponse(array(
+        'REQUEST_METHOD' => 'POST',
+        'REQUEST_URI' => '/api/account/' . $accountId . '/withdraw/' . $amount
+    ));
+    $this->assertEquals(true, $withdrawJsonOut->success);
+
+    $balanceJsonOut = $this->makeJsonResponse($balanceParams);
+    $this->assertEquals($currentBalance - $amount, $balanceJsonOut->balance);
+  }
+
+  /**
+   * @depends testWithdrawAfterDeposit
+   */
   public function testClose() {
     $accountId = $this->testId;
     $params = array(
@@ -137,6 +160,20 @@ class ApiTest extends TestCase {
     ));
     $this->assertEquals(false, $depositJsonOut->success);
     $this->assertEquals('Account doesn\'t exist', $depositJsonOut->message);
+  }
+
+  /**
+   * @depends testClose
+   */
+  public function testWithdrawAfterClose() {
+    $accountId = $this->testId;
+    $amount = 77;
+    $withdrawJsonOut = $this->makeJsonResponse(array(
+        'REQUEST_METHOD' => 'POST',
+        'REQUEST_URI' => '/api/account/' . $accountId . '/withdraw/' . $amount
+    ));
+    $this->assertEquals(false, $withdrawJsonOut->success);
+    $this->assertEquals('Account doesn\'t exist', $withdrawJsonOut->message);
   }
 }
 
