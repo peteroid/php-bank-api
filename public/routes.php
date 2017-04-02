@@ -17,9 +17,8 @@ class API_Routes {
       // get balance
       $app->get('/account/{accountId}/balance', array($apiController, 'getBalanceAction'));
 
-      // TODO
       // withdraw and deposit money
-      $app->post('/account/{accountId}/balance', array($apiController, 'someAction'));
+      $app->post('/account/{accountId}/deposit/{amount}', array($apiController, 'depositAction'));
     })->add(function ($request, $response, $next) {
       // error_log($response);
       $response = $next($request, $response);

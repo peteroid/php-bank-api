@@ -24,6 +24,11 @@ class API_Controller {
     $dbResponse = $this->db->getBalance($args['accountId']);
     return $response->withJson($dbResponse);
   }
+
+  public function depositAction ($request, $response, $args) {
+    $dbResponse = $this->db->deposit($args['accountId'], (int) $args['amount']);
+    return $response->withJson($dbResponse);
+  }
 }
 
 ?>
