@@ -124,6 +124,20 @@ class ApiTest extends TestCase {
     $this->assertEquals('Account doesn\'t exist', $jsonOut->message);
     $this->assertEquals(-1, $jsonOut->balance);
   }
+
+  /**
+   * @depends testClose
+   */
+  public function testDepositAfterClose() {
+    $accountId = $this->testId;
+    $amount = 777;
+    $depositJsonOut = $this->makeJsonResponse(array(
+        'REQUEST_METHOD' => 'POST',
+        'REQUEST_URI' => '/api/account/' . $accountId . '/deposit/' . $amount
+    ));
+    $this->assertEquals(false, $depositJsonOut->success);
+    $this->assertEquals('Account doesn\'t exist', $depositJsonOut->message);
+  }
 }
 
 ?>
